@@ -1,0 +1,50 @@
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+.admin-sidebar{
+width:220px;
+height:100vh;
+background:#2c3e50;
+color:white;
+position:fixed;
+padding:20px;
+}
+
+.admin-sidebar h2{
+text-align:center;
+}
+
+.admin-sidebar a{
+display:block;
+color:white;
+text-decoration:none;
+padding:10px;
+margin:10px 0;
+border-radius:5px;
+}
+
+.admin-sidebar a:hover{
+background:#34495e;
+}
+
+.admin-main{
+margin-left:240px;
+padding:30px;
+}
+
+.card-container{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
+
+.admin-card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+text-align:center;
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+<title>Notification</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+<a href="index.html">🏠 Home</a>
+<a href="attendance.html">📅 Attendance</a>
+<a href="marks.html">📊 Marks</a>
+<a href="notification.html" class="active">🔔 Alerts</a>
+<a href="timetable.html">🕒 Timetable</a>
+<a href="profile.html">👤 Profile</a>
+<a href="improvement.html">📈 Improve</a>
+<a href="admin/admin-login.html">🔑 Admin</a>
+</div>
+
+<div class="content">
+<h1>Latest Notification</h1>
+
+<div class="card" id="notificationList">
+
+<p>📢 Placement training begins 1st November</p>
+<p>📢 Holiday on 28th October</p>
+<p>📢 College event on 3rd November</p>
+
+</div>
+
+</div>
+
+<script>
+
+let notifications = JSON.parse(localStorage.getItem("notifications")) || [];
+
+let list = document.getElementById("notificationList");
+
+notifications.forEach(function(n){
+
+list.innerHTML += "<p>📢 " + n + "</p>";
+
+});
+
+</script>
+
+</body>
+</html>
