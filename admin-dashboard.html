@@ -2,55 +2,96 @@
 <html>
 <head>
 <title>Admin Dashboard</title>
-
 <link rel="stylesheet" href="admin.css">
-
 </head>
 
 <body>
 
 <div class="admin-sidebar">
-
-<h2>Admin Panel</h2>
-
-<a href="admin-dashboard.html">Dashboard</a>
-<a href="add-student.html">Add Student</a>
-<a href="add-marks.html">Upload Marks</a>
-<a href="notification.html">Send Notification</a>
-<a href="../index.html">Student Dashboard</a>
-
-</div>
-
-
-<div class="admin-main">
-
-<h1>Welcome Admin</h1>
-
-<div class="card-container">
-
-<div class="admin-card">
-<h3>Total Students</h3>
-<p>120</p>
+  <h2>🔑 Admin Panel</h2>
+  <a href="admin-dashboard.html">📊 Dashboard</a>
+  <a href="add-student.html">👤 Add Student</a>
+  <a href="add-marks.html">📝 Upload Marks</a>
+  <a href="add-attendance.html">📅 Add Attendance</a>
+  <a href="add-timetable.html">🕒 Add Timetable</a>
+  <a href="add-improvement.html">📈 Add Improvement Tip</a>
+  <a href="add-notification.html">🔔 Send Notification</a>
+  <a href="../index.html">🏠 Student Dashboard</a>
 </div>
 
 <div class="admin-card">
-<h3>Subjects</h3>
-<p>6</p>
+  <h3>👥 Total Students</h3>
+  <p id="totalStudents">...</p>
 </div>
 
 <div class="admin-card">
-<h3>Notifications</h3>
-<p>5</p>
+  <h3>📚 Subjects</h3>
+  <p id="totalSubjects">...</p>
 </div>
 
 <div class="admin-card">
-<h3>Attendance Avg</h3>
-<p>82%</p>
+  <h3>🔔 Notifications</h3>
+  <p id="totalNotifications">...</p>
 </div>
+
+<div class="admin-card">
+  <h3>📅 Attendance Avg</h3>
+  <p id="avgAttendance">...</p>
+</div>
+
+  <h2 style="margin-top: 30px;">Recent Marks</h2>
+  <table class="table" id="recentMarksTable">
+    <tr><th>Subject</th><th>Marks</th><th>Grade</th></tr>
+  </table>
 
 </div>
 
-</div>
+<script>
+  // Total students
+  fetch('http://localhost:5000/api/students')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('totalStudents').textContent = data.length;
+    });
+
+  // Subjects count + recent marks table
+  fetch('http://localhost:5000/api/marks')
+    .then(res => res.json())
+    .then(data => {
+      const uniqueSubjects = new Set(data.map(m => m.subject));
+      document.getElementById('totalSubjects').textContent = uniqueSubjects.size;
+
+      const table = document.getElementById('recentMarksTable');
+      data.slice(-5).reverse().forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.subject}</td>
+          <td>${row.marks_obtained}/${row.total_marks}</td>
+          <td>${row.grade}</td>
+        `;
+        table.appendChild(tr);
+      });
+    });
+
+  // Notifications count
+  fetch('http://localhost:5000/api/notifications')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('totalNotifications').textContent = data.length;
+    });
+
+  // Attendance average
+  fetch('http://localhost:5000/api/attendance')
+    .then(res => res.json())
+    .then(data => {
+      if (data.length === 0) {
+        document.getElementById('avgAttendance').textContent = 'N/A';
+        return;
+      }
+      const avg = data.reduce((sum, a) => sum + a.percentage, 0) / data.length;
+      document.getElementById('avgAttendance').textContent = Math.round(avg) + '%';
+    });
+</script>
 
 </body>
 </html>
