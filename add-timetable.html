@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Timetable</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="admin-sidebar">
+  <h2>🔑 Admin Panel</h2>
+  <a href="admin-dashboard.html">📊 Dashboard</a>
+  <a href="add-student.html">👤 Add Student</a>
+  <a href="add-marks.html">📝 Upload Marks</a>
+  <a href="add-attendance.html">📅 Add Attendance</a>
+  <a href="add-timetable.html">🕒 Add Timetable</a>
+  <a href="add-improvement.html">📈 Add Improvement Tip</a>
+  <a href="add-notification.html">🔔 Send Notification</a>
+  <a href="../index.html">🏠 Student Dashboard</a>
+</div>
+
+<div class="admin-main">
+
+<h2>Add Timetable Entry</h2>
+
+<input type="text" id="day" placeholder="Day (e.g. Monday)">
+<br><br>
+
+<input type="text" id="periodTime" placeholder="Time (e.g. 9:00 - 10:00)">
+<br><br>
+
+<input type="text" id="timetableSubject" placeholder="Subject">
+<br><br>
+
+<button onclick="addTimetable()">Add Entry</button>
+
+<script src="admin.js"></script>
+</div>
+</body>
+</html>
