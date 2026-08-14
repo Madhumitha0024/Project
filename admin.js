@@ -1,179 +1,218 @@
 // ---------------- ADMIN LOGIN ----------------
 
-function adminLogin(){
+function adminLogin() {
+  let user = document.getElementById("adminUser").value;
+  let pass = document.getElementById("adminPass").value;
 
-let user = document.getElementById("adminUser").value;
-let pass = document.getElementById("adminPass").value;
-
-if(user === "admin" && pass === "1234"){
-
-alert("Login Successful");
- window.location.href = "admin-dashboard.html";
-
-}
-else{
-
-alert("Invalid username or password");
-
-}
-
+  if (user === "admin" && pass === "1234") {
+    alert("Login Successful");
+    window.location.href = "admin-dashboard.html";
+  } else {
+    alert("Invalid username or password");
+  }
 }
 
 
 // ---------------- ADD STUDENT ----------------
 
-function addStudent(){
+async function addStudent() {
+  let name = document.getElementById("name").value;
+  let id = document.getElementById("studentId").value;
 
-let name = document.getElementById("name").value;
-let id = document.getElementById("studentId").value;
+  if (name === "" || id === "") {
+    alert("Enter student details");
+    return;
+  }
 
-if(name === "" || id === ""){
-alert("Enter student details");
-return;
-}
+  await fetch("http://localhost:5000/api/students", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: name, roll_no: id })
+  });
 
-let students = JSON.parse(localStorage.getItem("students")) || [];
+  alert("Student Added Successfully");
 
-students.push({
-name:name,
-id:id
-});
+  document.getElementById("name").value = "";
+  document.getElementById("studentId").value = "";
 
-localStorage.setItem("students", JSON.stringify(students));
-
-alert("Student Added Successfully");
-
-document.getElementById("name").value="";
-document.getElementById("studentId").value="";
-document.getElementById("sem").value="";
-
-displayStudents();
-
+  displayStudents();
 }
 
 
 // ---------------- DISPLAY STUDENTS ----------------
 
-function displayStudents(){
+async function displayStudents() {
+  let table = document.getElementById("studentTable");
+  if (!table) return;
 
-let students = JSON.parse(localStorage.getItem("students")) || [];
-let table = document.getElementById("studentTable");
+  const res = await fetch("http://localhost:5000/api/students");
+  const students = await res.json();
 
-if(!table) return;
+  table.innerHTML = "";
 
-table.innerHTML="";
-
-students.forEach((s,index)=>{
-
-let row = `
-<tr>
-<td>${s.name}</td>
-<td>${s.id}</td>
-<td><button onclick="deleteStudent(${index})">Delete</button></td>
-</tr>
-`;
-
-table.innerHTML += row;
-
-});
-
+  students.forEach((s) => {
+    let row = `
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.roll_no}</td>
+        <td><button onclick="deleteStudent(${s.id})">Delete</button></td>
+      </tr>
+    `;
+    table.innerHTML += row;
+  });
 }
 
 
 // ---------------- DELETE STUDENT ----------------
 
-function deleteStudent(index){
+async function deleteStudent(id) {
+  await fetch(`http://localhost:5000/api/students/${id}`, {
+    method: "DELETE"
+  });
 
-let students = JSON.parse(localStorage.getItem("students")) || [];
-
-students.splice(index,1);
-
-localStorage.setItem("students",JSON.stringify(students));
-
-displayStudents();
-
+  displayStudents();
 }
 
 
 // ---------------- ADD MARKS ----------------
 
-function addMarks(){
+async function addMarks() {
+  let name = document.getElementById("studentName").value;
+  let subject = document.getElementById("subject").value;
+  let marks = document.getElementById("marks").value;
 
-let name = document.getElementById("studentName").value;
-let subject = document.getElementById("subject").value;
-let marks = document.getElementById("marks").value;
-
-if(name === "" || subject === "" || marks === ""){
+  if (name === "" || subject === "" || marks === "") {
     alert("Please fill all fields");
     return;
-}
+  }
 
-let markData = {
-    name: name,
-    subject: subject,
-    marks: marks
-};
+  await fetch("http://localhost:5000/api/marks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      student_name: name,
+      subject: subject,
+      marks_obtained: Number(marks),
+      total_marks: 100
+    })
+  });
 
-let marksList = JSON.parse(localStorage.getItem("marks")) || [];
+  alert("Marks Added Successfully");
 
-marksList.push(markData);
-
-localStorage.setItem("marks", JSON.stringify(marksList));
-
-alert("Marks Added Successfully");
-
-document.getElementById("studentName").value="";
-document.getElementById("subject").value="";
-document.getElementById("marks").value="";
-
+  document.getElementById("studentName").value = "";
+  document.getElementById("subject").value = "";
+  document.getElementById("marks").value = "";
 }
 
 
 // ---------------- ADD NOTIFICATION ----------------
 
-function sendNotification(){
+async function sendNotification() {
+  let message = document.getElementById("notificationText").value;
 
-let message = document.getElementById("notificationText").value;
+  if (message === "") {
+    alert("Enter notification message");
+    return;
+  }
 
-if(message === ""){
-alert("Enter notification message");
-return;
+  await fetch("http://localhost:5000/api/notifications", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: message })
+  });
+
+  alert("Notification sent successfully");
+
+  document.getElementById("notificationText").value = "";
 }
 
-let notes = JSON.parse(localStorage.getItem("notifications")) || [];
 
-notes.push(message);
+// ---------------- ADD ATTENDANCE ----------------
 
-localStorage.setItem("notifications", JSON.stringify(notes));
+async function addAttendance() {
+  let total = document.getElementById("totalClasses").value;
+  let attended = document.getElementById("attendedClasses").value;
 
-alert("Notification sent successfully");
+  if (total === "" || attended === "") {
+    alert("Please fill all fields");
+    return;
+  }
 
-document.getElementById("notificationText").value="";
+  const percentage = (Number(attended) / Number(total)) * 100;
 
+  await fetch("http://localhost:5000/api/attendance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      student_id: 1,
+      total_classes: Number(total),
+      attended_classes: Number(attended),
+      percentage: percentage
+    })
+  });
+
+  alert("Attendance Added Successfully");
+
+  document.getElementById("totalClasses").value = "";
+  document.getElementById("attendedClasses").value = "";
 }
 
 
-// ---------------- SHOW NOTIFICATIONS ----------------
+// ---------------- ADD TIMETABLE ----------------
 
-async function sendNotification(){
+async function addTimetable() {
+  let day = document.getElementById("day").value;
+  let time = document.getElementById("periodTime").value;
+  let subject = document.getElementById("timetableSubject").value;
 
-let message = document.getElementById("notificationText").value;
+  if (day === "" || time === "" || subject === "") {
+    alert("Please fill all fields");
+    return;
+  }
 
-if(message === ""){
-alert("Enter notification message");
-return;
+  await fetch("http://localhost:5000/api/timetable", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      day: day,
+      period_time: time,
+      subject: subject
+    })
+  });
+
+  alert("Timetable Entry Added Successfully");
+
+  document.getElementById("day").value = "";
+  document.getElementById("periodTime").value = "";
+  document.getElementById("timetableSubject").value = "";
 }
 
-await fetch("http://localhost:5000/api/notifications",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({message:message})
-});
 
-alert("Notification sent successfully");
+// ---------------- ADD IMPROVEMENT ----------------
 
-document.getElementById("notificationText").value="";
+async function addImprovement() {
+  let subject = document.getElementById("improvementSubject").value;
+  let suggestion = document.getElementById("suggestion").value;
 
+  if (subject === "" || suggestion === "") {
+    alert("Please fill all fields");
+    return;
+  }
+
+  await fetch("http://localhost:5000/api/improvement", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      student_id: 1,
+      subject: subject,
+      suggestion: suggestion
+    })
+  });
+
+  alert("Improvement Suggestion Added Successfully");
+
+  document.getElementById("improvementSubject").value = "";
+  document.getElementById("suggestion").value = "";
 }
+
+
