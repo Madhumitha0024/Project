@@ -18,47 +18,48 @@
   <a href="improvement.html">📈 Improve Grades</a>
   <a href="admin/admin-login.html"><span class="icon">🔑</span> Admin</a>
 </div>
-</div>
 
 <!-- Main Content -->
 <div class="content">
   <h1>Marks Overview</h1>
 
-  <table class="table">
+  <table class="table" id="marksTable">
     <tr><th>Subject</th><th>Marks</th><th>Score</th></tr>
-    <tr class="java">
-      <td>Java</td>
-      <td>45/50</td>
-      <td>
-        <div class="progress-bar">
-          <div class="progress" style="width: 90%; background-color: #3498db;">90%</div>
-        </div>
-      </td>
-    </tr>
-    <tr class="rdbms">
-      <td>RDBMS</td>
-      <td>38/50</td>
-      <td>
-        <div class="progress-bar">
-          <div class="progress" style="width: 76%; background-color: #e67e22;">76%</div>
-        </div>
-      </td>
-    </tr>
-    <tr class="python">
-      <td>Python</td>
-      <td>42/50</td>
-      <td>
-        <div class="progress-bar">
-          <div class="progress" style="width: 84%; background-color: #2ecc71;">84%</div>
-        </div>
-      </td>
-    </tr>
+    <!-- Rows will be added here automatically from the database -->
   </table>
 
 </div>
+
+<script>
+  fetch('http://localhost:5000/api/marks')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+
+      const table = document.getElementById('marksTable');
+
+      data.forEach(row => {
+        const percentage = Math.round((row.marks_obtained / row.total_marks) * 100);
+
+        let color = '#e67e22'; // orange (average)
+        if (percentage >= 85) color = '#2ecc71'; // green (good)
+        else if (percentage >= 60) color = '#3498db'; // blue (ok)
+        else color = '#e74c3c'; // red (needs improvement)
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.subject}</td>
+          <td>${row.marks_obtained}/${row.total_marks}</td>
+          <td>
+            <div class="progress-bar">
+              <div class="progress" style="width: ${percentage}%; background-color: ${color};">${percentage}%</div>
+            </div>
+          </td>
+        `;
+        table.appendChild(tr);
+      });
+    })
+    .catch(err => console.error('Error loading marks:', err));
+</script>
 </body>
 </html>
-
-
-
-
